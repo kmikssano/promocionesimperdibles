@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Promociones imperdibles</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style media="screen">
+
+@font-face {
+  font-family: 'HelveticaNowDisplayLight'; /* Nombre de la fuente */
+  src: url('Fuentes/HelveticaNowDisplayLight.ttf') format('truetype');
+}
+
+body {
+  line-height: 1.5;
+  font-family: 'HelveticaNowDisplayLight', Helvetica, Arial, sans-serif; /* Usar la fuente definida y fuentes de respaldo */
+  margin: 0;
+  padding: 0;
+}
+    * {
+        box-sizing: border-box;
+    }
+
+    header {
+        background-color: #ffffff; /* Color de fondo del encabezado */
+        padding: 10px 20px; /* Espaciado interno */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+    }
+
+    header img {
+        height: 40px; /* Tamaño del logo */
+    }
+
+    banner {
+      text-align: center;
+      padding: 20px 0; /* Ajusta el relleno según sea necesario */
+    }
+
+    .banner img {
+      max-width: 100%; /* Ajusta la imagen al ancho máximo de su contenedor */
+    }
+
+    .category-button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .category-dropdown {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        right: 0; /* Alinea el desplegable a la derecha */
+        top: calc(10% + 10px); /* Posición debajo del botón */
+    }
+
+    .category-dropdown a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .category-dropdown a:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* Gallery styles */
+    .container {
+        max-width: 1170px;
+        margin: auto;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    img {
+        max-width: 100%;
+        vertical-align: middle;
+    }
+
+    .gallery {
+        width: 100%;
+        display: block;
+        min-height: 100vh;
+        background-image: url('https://i.postimg.cc/440ffbTs/fondo.png');
+        background-position: center; /* Para centrar la imagen */
+        padding: 100px; 
+    }
+
+    .gallery .gallery-item {
+        width: calc(100% / 3);
+        padding: 15px;
+    }
+
+    .gallery .gallery-item-inner {
+        background-color: white;
+        padding: 10px;
+    }
+
+    .gallery .gallery-item-inner img {
+        width: 100%;
+        border: 1px solid #d4dad9;
+    }
+
+    .gallery .gallery-item-inner .stock-info {
+        color: black;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    .gallery .gallery-item.show {
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .gallery .gallery-item.hide {
+        display: none;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 767px) {
+        .gallery .gallery-item {
+            width: 50%;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .gallery .gallery-item {
+            width: 100%;
+        }
+
+        header img {
+            height: 30px; /* Tamaño del logo en pantallas más pequeñas */
+        }
+    }
+
+
+  </style>
+</head>
+<body>
+
+<header>
+    <img src="https://static.wikia.nocookie.net/logopedia/images/4/48/Natura_2013.svg/revision/latest/scale-to-width-down/225?cb=20220502033945&path-prefix=es" alt="Logo"> <!-- Añade la ruta de tu logo aquí -->
+    <div class="category-dropdown" id="categoryDropdown">
+        <a href="#" onclick="filterCategory('Todos')">Todos los productos</a>
+        <a href="#" onclick="filterCategory('Perfumeria')">Perfumeria</a>
+        <a href="#" onclick="filterCategory('Cuerpo')">Cuerpo</a>
+        <a href="#" onclick="filterCategory('Jabones')">Jabones</a>
+        <a href="#" onclick="filterCategory('Cabellos')">Cabellos</a>
+    </div>
+    
+    <button class="category-button" onclick="toggleDropdown()">Categorías</button>
+</header>
+
+<div class="banner">
+    <img src="https://i.postimg.cc/pdR68TFq/BANNER.png" alt="Banner">
+</div>
+
+<section class="gallery">
+    <div class="container">
+        <div class="row" id="image-row">
+            <!-- Images will be dynamically loaded here -->
+        </div>
+    </div>  
+
+</section>
+
+<script>
+    // Function to load images and stock from Google Sheets
+    function loadImagesAndStockFromGoogleSheets() {
+        fetch('https://script.google.com/macros/s/AKfycbwGU5BdbaA3AnnDSEvSrKF8-LDNgQa3wgM0uhVtwxLALJOzbpDZsD3980afJ17ikx9Aww/exec')
+            .then(response => response.json())
+            .then(data => {
+                const imagesContainer = document.getElementById('image-row');
+                imagesContainer.innerHTML = ''; // Clear existing images
+                data.forEach(imageDetails => {
+                    const imageURL = imageDetails.url;
+                    const stock = imageDetails.stock;
+                    const productCode = imageDetails.product_code;
+                    const points = imageDetails.points;
+                    const description = imageDetails.description;
+                    const category = imageDetails.category;
+                    const imageElement = document.createElement('div');
+                    imageElement.classList.add('gallery-item');
+                    imageElement.classList.add(category);
+                    imageElement.innerHTML = `
+                    <div class="gallery-item-inner" style="${stock <= 0 ? 'filter: grayscale(100%);' : ''}">
+                    <img src="${imageURL}" alt="image">
+                    <div class="info-container">
+                        <div class="product-code" style ="text-align: left; font-size: 14px;" > Código: ${productCode}  | ${points} puntos </div>
+        <div class="product-description" style="text-align: left; font-weight: bold; font-size: 16px;">${description}</div>
+        <div class="stock-info" style="${stock <= 0 ? 'text-align: center; font-weight: bold; font-size: 14px' : ''}">${stock <= 0 ? ' AGOTADO' : 'Stock: ' + stock}</div>
+    </div>
+</div>
+                    `;
+                    imagesContainer.appendChild(imageElement);
+                });
+            })
+            .catch(error => console.error('Error fetching images and stock:', error));
+    }
+
+    // Function to toggle the dropdown visibility
+    function toggleDropdown() {
+        const dropdown = document.getElementById('categoryDropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Function to filter images by category
+    function filterCategory(category) {
+        const allItems = document.querySelectorAll('.gallery-item');
+        allItems.forEach(item => {
+            if (category === 'Todos' || item.classList.contains(category)) {
+            item.classList.remove('hide');
+            item.classList.add('show');
+        } else {
+            item.classList.remove('show');
+            item.classList.add('hide');
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadImagesAndStockFromGoogleSheets);
+</script>
+
+</body>
+</html>
+
